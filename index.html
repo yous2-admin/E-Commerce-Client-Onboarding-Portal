@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Commerce Agency Client Onboarding Portal</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#0284c7',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar for modern feel */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .task-checkbox:checked + label {
+            text-decoration: line-through;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- Top Header -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-sky-500/20">
+                    <i class="ph-bold ph-rocket-launch text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-slate-900 leading-tight">E-Com Agency Onboarding</h1>
+                    <p class="text-xs text-slate-500">Client Launch & Integration Hub</p>
+                </div>
+            </div>
+
+            <!-- Header Quick Actions -->
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                <button onclick="exportSummaryModal()" class="px-3 py-2 text-xs sm:text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors flex items-center gap-1.5">
+                    <i class="ph-bold ph-export text-base"></i>
+                    <span>Export / Summary</span>
+                </button>
+                <button onclick="resetChecklist()" class="p-2 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition-colors" title="Reset Checklist Progress">
+                    <i class="ph-bold ph-arrows-counter-clockwise text-lg"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+        <!-- Left Sidebar / Stats & Nav -->
+        <aside class="lg:col-span-4 space-y-6">
+            <!-- Overall Progress Card -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span class="text-xs font-semibold tracking-wider text-sky-600 uppercase">Onboarding Readiness</span>
+                        <h2 class="text-2xl font-bold text-slate-900 mt-1" id="overallPercentText">0%</h2>
+                    </div>
+                    <div id="statusBadge" class="px-2.5 py-1 text-xs font-semibold rounded-full bg-amber-50 text-amber-700 border border-amber-200">
+                        In Progress
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
+                    <div id="overallProgressBar" class="bg-gradient-to-r from-sky-500 to-indigo-600 h-full rounded-full transition-all duration-500 ease-out" style="width: 0%"></div>
+                </div>
+
+                <div class="flex justify-between text-xs text-slate-500 pt-1">
+                    <span id="completedCountText">0 of 0 tasks completed</span>
+                    <span id="estimatedTimeText">Est. 2-3 Days setup</span>
+                </div>
+            </div>
+
+            <!-- Client Info Card -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                <h3 class="text-sm font-semibold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                    <i class="ph-bold ph-storefront text-sky-600"></i> Client Details
+                </h3>
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 mb-1">Brand / Store Name</label>
+                        <input type="text" id="clientStoreName" placeholder="e.g. Apex Apparel Co." oninput="saveClientInfo()" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 mb-1">Primary Point of Contact</label>
+                        <input type="text" id="clientContact" placeholder="e.g. Sarah Jenkins (CMO)" oninput="saveClientInfo()" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 mb-1">Target Launch Date</label>
+                        <input type="date" id="targetLaunchDate" onchange="saveClientInfo()" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-all">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase Quick Navigation -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-3 hidden lg:block">
+                <h3 class="text-sm font-semibold text-slate-900 uppercase tracking-wider mb-2">Onboarding Modules</h3>
+                <nav id="phaseNavList" class="space-y-1">
+                    <!-- Nav items dynamically injected here -->
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Task Checklist Area -->
+        <section class="lg:col-span-8 space-y-6">
+
+            <!-- Filter & Search Toolbar -->
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+                <!-- Status Tabs -->
+                <div class="flex items-center bg-slate-100 p-1 rounded-xl w-full sm:w-auto">
+                    <button onclick="setFilter('all')" id="filter-all" class="filter-tab px-4 py-1.5 text-xs font-medium rounded-lg text-slate-700 bg-white shadow-sm transition-all flex-1 sm:flex-initial">All</button>
+                    <button onclick="setFilter('pending')" id="filter-pending" class="filter-tab px-4 py-1.5 text-xs font-medium rounded-lg text-slate-500 hover:text-slate-700 transition-all flex-1 sm:flex-initial">Pending</button>
+                    <button onclick="setFilter('completed')" id="filter-completed" class="filter-tab px-4 py-1.5 text-xs font-medium rounded-lg text-slate-500 hover:text-slate-700 transition-all flex-1 sm:flex-initial">Completed</button>
+                </div>
+
+                <!-- Search Input -->
+                <div class="relative w-full sm:w-64">
+                    <i class="ph-bold ph-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-sm"></i>
+                    <input type="text" id="searchInput" placeholder="Search tasks or specs..." oninput="renderChecklist()" class="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-all">
+                </div>
+            </div>
+
+            <!-- Dynamic Task Categories -->
+            <div id="checklistCategories" class="space-y-6">
+                <!-- Rendered dynamically via JavaScript -->
+            </div>
+
+        </section>
+    </main>
+
+    <!-- Modal: Add Custom Task -->
+    <div id="addTaskModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h3 class="font-bold text-slate-900 flex items-center gap-2">
+                    <i class="ph-bold ph-plus-circle text-sky-600"></i> Add Custom Onboarding Task
+                </h3>
+                <button onclick="closeAddTaskModal()" class="text-slate-400 hover:text-slate-600">
+                    <i class="ph-bold ph-x text-lg"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-medium text-slate-600 mb-1">Module / Phase</label>
+                    <select id="newTaskPhase" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-sky-500">
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-600 mb-1">Task Title</label>
+                    <input type="text" id="newTaskTitle" placeholder="e.g. Provide access to TikTok Shop account" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-sky-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-600 mb-1">Description / Links (Optional)</label>
+                    <textarea id="newTaskDesc" rows="2" placeholder="Add specific instructions or access requirements..." class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-sky-500"></textarea>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="closeAddTaskModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
+                <button onclick="saveCustomTask()" class="px-4 py-2 text-xs font-semibold text-white bg-sky-600 hover:bg-sky-700 rounded-lg shadow-sm">Save Task</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Export & Summary -->
+    <div id="exportModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl border border-slate-100 space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <div class="flex items-center gap-2">
+                    <i class="ph-bold ph-file-text text-sky-600 text-xl"></i>
+                    <div>
+                        <h3 class="font-bold text-slate-900">Onboarding Status Report</h3>
+                        <p class="text-xs text-slate-500">Ready to copy into email, Slack, or print as PDF</p>
+                    </div>
+                </div>
+                <button onclick="closeExportModal()" class="text-slate-400 hover:text-slate-600">
+                    <i class="ph-bold ph-x text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Export Preview Textarea -->
+            <div>
+                <textarea id="exportTextContent" readonly class="w-full h-64 font-mono text-xs p-3 bg-slate-900 text-slate-200 rounded-xl focus:outline-none leading-relaxed border border-slate-800"></textarea>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+                <button onclick="window.print()" class="px-4 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg flex items-center gap-1.5">
+                    <i class="ph-bold ph-printer text-sm"></i> Print / Save as PDF
+                </button>
+                <div class="flex gap-2">
+                    <button onclick="closeExportModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg">Close</button>
+                    <button onclick="copyExportText()" class="px-4 py-2 text-xs font-semibold text-white bg-sky-600 hover:bg-sky-700 rounded-lg flex items-center gap-1.5 shadow-sm">
+                        <i class="ph-bold ph-copy text-sm"></i> Copy to Clipboard
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-xl flex items-center space-x-2 text-xs z-50 transform translate-y-20 opacity-0 transition-all duration-300">
+        <i class="ph-bold ph-check-circle text-emerald-400 text-base"></i>
+        <span id="toastMsg">Action completed</span>
+    </div>
+
+    <!-- Application Script -->
+    <script>
+        // Initial Default Task Dataset
+        const defaultOnboardingData = [
+            {
+                id: "phase-1",
+                title: "1. Account & Admin Access",
+                icon: "ph-key",
+                description: "Grant administrator or partner permissions to core store platforms and marketing channels.",
+                tasks: [
+                    { id: "t-101", title: "Shopify / WooCommerce Staff Access", desc: "Invite agency partner email with Orders, Products, and Analytics permissions.", completed: false },
+                    { id: "t-102", title: "Meta Business Manager Partner Access", desc: "Add Agency Partner ID (Ad Account, Page, Pixel, Catalog permissions).", completed: false },
+                    { id: "t-103", title: "Google Ads & Merchant Center Access", desc: "Grant Standard/Admin access for Google Ads & Link Merchant Center.", completed: false },
+                    { id: "t-104", title: "Klaviyo / ESP Account Integration", desc: "Add agency user with Admin/Manager role for email flow & campaign setup.", completed: false },
+                    { id: "t-105", title: "Google Analytics 4 (GA4) Admin Access", desc: "Grant Editor access to property settings and conversion events.", completed: false }
+                ]
+            },
+            {
+                id: "phase-2",
+                title: "2. Brand & Asset Delivery",
+                icon: "ph-paint-brush-household",
+                description: "Share visual brand identity components, raw media assets, and social proof content.",
+                tasks: [
+                    { id: "t-201", title: "Vector Logos & Brand Style Guide", desc: "Upload SVG/PNG logos, font files, and brand hex color palette.", completed: false },
+                    { id: "t-202", title: "High-Res Product Photography", desc: "Provide Google Drive/Dropbox folder of transparent PNGs & lifestyle shots.", completed: false },
+                    { id: "t-203", title: "UGC & Short-Form Video Assets", desc: "Share raw video clips, creator content, unboxings, and product demos.", completed: false },
+                    { id: "t-204", title: "Customer Reviews & Social Proof", desc: "Export top 5-star customer reviews, press quotes, or award badges.", completed: false },
+                    { id: "t-205", title: "Ad Copy Guidelines & Tone of Voice", desc: "Provide brand do's/don'ts, preferred messaging, and banned terms.", completed: false }
+                ]
+            },
+            {
+                id: "phase-3",
+                title: "3. Data & Analytics Integration",
+                icon: "ph-chart-line-up",
+                description: "Verify tracking pixels, dynamic catalog synchronization, and server-side event tracking.",
+                tasks: [
+                    { id: "t-301", title: "Meta Conversions API (CAPI) Configuration", desc: "Connect server-side tracking to bypass iOS browser tracking limits.", completed: false },
+                    { id: "t-302", title: "Google Analytics 4 E-Commerce Tracking", desc: "Verify purchase, view_item, and add_to_cart revenue event triggers.", completed: false },
+                    { id: "t-303", title: "Product Feed Health Check", desc: "Ensure real-time inventory, pricing, and variant sync for Shopping Ads.", completed: false },
+                    { id: "t-304", title: "Klaviyo Web Tracking & Dynamic Cart Snippet", desc: "Test browse abandonment and active on-site user tracking script.", completed: false }
+                ]
+            },
+            {
+                id: "phase-4",
+                title: "4. Business Goals & Guidelines",
+                icon: "ph-target",
+                description: "Align financial benchmarks, promotional restrictions, and inventory highlights.",
+                tasks: [
+                    { id: "t-401", title: "Target CAC & Blended ROAS Targets", desc: "Define target acquisition costs, break-even ROAS, and target margins.", completed: false },
+                    { id: "t-402", title: "Top-Selling SKUs & High-Margin Products", desc: "Highlight hero products with stock availability to focus initial ad budget.", completed: false },
+                    { id: "t-403", title: "Discounting & Promotional Rules", desc: "Specify maximum allowed promo codes, stackable offer rules, and margins.", completed: false },
+                    { id: "t-404", title: "Competitor & Inspiration Matrix", desc: "List 3-5 primary competitors and brands whose marketing style you admire.", completed: false }
+                ]
+            },
+            {
+                id: "phase-5",
+                title: "5. Kickoff & Communication",
+                icon: "ph-users-three",
+                description: "Set up communication channels, escalation paths, and reporting schedules.",
+                tasks: [
+                    { id: "t-501", title: "Shared Slack / Teams Channel Setup", desc: "Join collaborative chat channel for rapid day-to-day communications.", completed: false },
+                    { id: "t-502", title: "Assign Main Agency & Client Stakeholders", desc: "Designate lead Account Manager and internal Client Approval Lead.", completed: false },
+                    { id: "t-503", title: "Schedule Weekly Growth Sync Call", desc: "Confirm recurring meeting time slot for campaign performance reviews.", completed: false },
+                    { id: "t-504", title: "Live Reporting Dashboard Access", desc: "Receive access link to 24/7 client performance dashboard.", completed: false }
+                ]
+            }
+        ];
+
+        // Global State Variable
+        let onboardingState = [];
+        let currentFilter = 'all';
+        let clientInfo = {
+            storeName: '',
+            contact: '',
+            targetDate: ''
+        };
+
+        // Initialize App on Page Load
+        window.onload = function() {
+            loadFromLocalStorage();
+            renderChecklist();
+            renderNavigation();
+            updateProgressMetrics();
+        };
+
+        // Local Storage Logic
+        function loadFromLocalStorage() {
+            const savedData = localStorage.getItem('ecom_onboarding_data');
+            const savedClient = localStorage.getItem('ecom_onboarding_client');
+            
+            if (savedData) {
+                try {
+                    onboardingState = JSON.parse(savedData);
+                } catch(e) {
+                    onboardingState = JSON.parse(JSON.stringify(defaultOnboardingData));
+                }
+            } else {
+                onboardingState = JSON.parse(JSON.stringify(defaultOnboardingData));
+            }
+
+            if (savedClient) {
+                try {
+                    clientInfo = JSON.parse(savedClient);
+                    document.getElementById('clientStoreName').value = clientInfo.storeName || '';
+                    document.getElementById('clientContact').value = clientInfo.contact || '';
+                    document.getElementById('targetLaunchDate').value = clientInfo.targetDate || '';
+                } catch(e) {}
+            }
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('ecom_onboarding_data', JSON.stringify(onboardingState));
+            updateProgressMetrics();
+        }
+
+        function saveClientInfo() {
+            clientInfo.storeName = document.getElementById('clientStoreName').value;
+            clientInfo.contact = document.getElementById('clientContact').value;
+            clientInfo.targetDate = document.getElementById('targetLaunchDate').value;
+            localStorage.setItem('ecom_onboarding_client', JSON.stringify(clientInfo));
+        }
+
+        // Toggle Task Completion State
+        function toggleTask(phaseId, taskId) {
+            const phase = onboardingState.find(p => p.id === phaseId);
+            if (phase) {
+                const task = phase.tasks.find(t => t.id === taskId);
+                if (task) {
+                    task.completed = !task.completed;
+                    saveToLocalStorage();
+                    renderChecklist();
+                    renderNavigation();
+                    
+                    if (task.completed) {
+                        showToast(`Completed: "${task.title}"`);
+                    }
+                }
+            }
+        }
+
+        // Render Sidebar Navigation Phase Summary
+        function renderNavigation() {
+            const navContainer = document.getElementById('phaseNavList');
+            navContainer.innerHTML = '';
+
+            onboardingState.forEach(phase => {
+                const completed = phase.tasks.filter(t => t.completed).length;
+                const total = phase.tasks.length;
+                const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+                const navItem = document.createElement('a');
+                navItem.href = `#${phase.id}`;
+                navItem.className = `flex items-center justify-between p-2 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-50 transition-all`;
+                navItem.innerHTML = `
+                    <div class="flex items-center gap-2 truncate">
+                        <i class="ph-bold ${phase.icon} text-slate-400"></i>
+                        <span class="truncate">${phase.title.replace(/^\d+\.\s*/, '')}</span>
+                    </div>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${percent === 100 ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'}">
+                        ${completed}/${total}
+                    </span>
+                `;
+                navContainer.appendChild(navItem);
+            });
+        }
+
+        // Render Main Checklist Categories & Items
+        function renderChecklist() {
+            const container = document.getElementById('checklistCategories');
+            const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+            container.innerHTML = '';
+
+            onboardingState.forEach(phase => {
+                // Filter tasks based on status and search query
+                const filteredTasks = phase.tasks.filter(task => {
+                    const matchesFilter = currentFilter === 'all' || 
+                        (currentFilter === 'completed' && task.completed) || 
+                        (currentFilter === 'pending' && !task.completed);
+                    
+                    const matchesSearch = task.title.toLowerCase().includes(searchQuery) || 
+                                          task.desc.toLowerCase().includes(searchQuery);
+
+                    return matchesFilter && matchesSearch;
+                });
+
+                if (filteredTasks.length === 0 && searchQuery !== '') return;
+
+                const completedCount = phase.tasks.filter(t => t.completed).length;
+                const totalCount = phase.tasks.length;
+                const phasePercent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+
+                const categoryCard = document.createElement('div');
+                categoryCard.id = phase.id;
+                categoryCard.className = 'bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden transition-all';
+
+                let tasksHTML = '';
+                if (filteredTasks.length === 0) {
+                    tasksHTML = `<div class="p-6 text-center text-xs text-slate-400">No ${currentFilter} tasks in this section.</div>`;
+                } else {
+                    tasksHTML = filteredTasks.map(task => `
+                        <div class="p-4 sm:p-5 flex items-start space-x-3 sm:space-x-4 border-b border-slate-100 last:border-b-0 hover:bg-slate-50/70 transition-colors group">
+                            <input 
+                                type="checkbox" 
+                                id="${task.id}" 
+                                ${task.completed ? 'checked' : ''} 
+                                onchange="toggleTask('${phase.id}', '${task.id}')"
+                                class="task-checkbox mt-0.5 h-5 w-5 text-sky-600 rounded border-slate-300 focus:ring-sky-500 cursor-pointer accent-sky-600 transition-all"
+                            >
+                            <div class="flex-grow min-w-0">
+                                <label for="${task.id}" class="text-sm font-semibold text-slate-900 cursor-pointer select-none block ${task.completed ? 'line-through text-slate-400' : ''}">
+                                    ${escapeHTML(task.title)}
+                                </label>
+                                <p class="text-xs text-slate-500 mt-0.5 leading-relaxed ${task.completed ? 'text-slate-300' : ''}">
+                                    ${escapeHTML(task.desc)}
+                                </p>
+                            </div>
+                            ${task.isCustom ? `
+                                <button onclick="deleteCustomTask('${phase.id}', '${task.id}')" class="text-slate-300 hover:text-rose-500 transition-colors opacity-0 group-hover:opacity-100 p-1" title="Delete custom task">
+                                    <i class="ph-bold ph-trash text-base"></i>
+                                </button>
+                            ` : ''}
+                        </div>
+                    `).join('');
+                }
+
+                categoryCard.innerHTML = `
+                    <div class="p-5 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div class="flex items-center space-x-3">
+                            <div class="p-2.5 rounded-xl bg-sky-50 text-sky-600 border border-sky-100">
+                                <i class="ph-bold ${phase.icon} text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-base font-bold text-slate-900">${phase.title}</h3>
+                                <p class="text-xs text-slate-500">${phase.description}</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between sm:justify-end space-x-4">
+                            <!-- Phase Progress Mini Bar -->
+                            <div class="text-right">
+                                <span class="text-xs font-bold text-slate-700">${phasePercent}%</span>
+                                <div class="w-20 bg-slate-200 rounded-full h-1.5 mt-1 overflow-hidden">
+                                    <div class="bg-sky-500 h-full rounded-full transition-all duration-300" style="width: ${phasePercent}%"></div>
+                                </div>
+                            </div>
+                            <button onclick="openAddTaskModal('${phase.id}')" class="px-2.5 py-1.5 text-xs font-medium text-sky-700 bg-sky-50 hover:bg-sky-100 border border-sky-200 rounded-lg transition-colors flex items-center gap-1">
+                                <i class="ph-bold ph-plus text-xs"></i>
+                                <span>Add Task</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        ${tasksHTML}
+                    </div>
+                `;
+
+                container.appendChild(categoryCard);
+            });
+        }
+
+        // Calculate & Update Metrics
+        function updateProgressMetrics() {
+            let totalTasks = 0;
+            let completedTasks = 0;
+
+            onboardingState.forEach(phase => {
+                totalTasks += phase.tasks.length;
+                completedTasks += phase.tasks.filter(t => t.completed).length;
+            });
+
+            const overallPercent = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+            // UI Element Updates
+            document.getElementById('overallPercentText').innerText = `${overallPercent}%`;
+            document.getElementById('overallProgressBar').style.width = `${overallPercent}%`;
+            document.getElementById('completedCountText').innerText = `${completedTasks} of ${totalTasks} tasks completed`;
+
+            const badge = document.getElementById('statusBadge');
+            if (overallPercent === 100) {
+                badge.className = "px-2.5 py-1 text-xs font-semibold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200";
+                badge.innerText = "Ready for Launch 🚀";
+            } else if (overallPercent > 0) {
+                badge.className = "px-2.5 py-1 text-xs font-semibold rounded-full bg-sky-50 text-sky-700 border border-sky-200";
+                badge.innerText = "In Progress";
+            } else {
+                badge.className = "px-2.5 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-600 border border-slate-200";
+                badge.innerText = "Not Started";
+            }
+        }
+
+        // Status Filter Buttons
+        function setFilter(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.className = "filter-tab px-4 py-1.5 text-xs font-medium rounded-lg text-slate-500 hover:text-slate-700 transition-all flex-1 sm:flex-initial";
+            });
+            const activeTab = document.getElementById(`filter-${filter}`);
+            if (activeTab) {
+                activeTab.className = "filter-tab px-4 py-1.5 text-xs font-medium rounded-lg text-slate-700 bg-white shadow-sm transition-all flex-1 sm:flex-initial";
+            }
+            renderChecklist();
+        }
+
+        // Custom Task Modal Operations
+        function openAddTaskModal(targetPhaseId = null) {
+            const select = document.getElementById('newTaskPhase');
+            select.innerHTML = '';
+            onboardingState.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.id;
+                opt.innerText = p.title;
+                if (targetPhaseId && p.id === targetPhaseId) opt.selected = true;
+                select.appendChild(opt);
+            });
+
+            document.getElementById('newTaskTitle').value = '';
+            document.getElementById('newTaskDesc').value = '';
+            document.getElementById('addTaskModal').classList.remove('hidden');
+        }
+
+        function closeAddTaskModal() {
+            document.getElementById('addTaskModal').classList.add('hidden');
+        }
+
+        function saveCustomTask() {
+            const phaseId = document.getElementById('newTaskPhase').value;
+            const title = document.getElementById('newTaskTitle').value.trim();
+            const desc = document.getElementById('newTaskDesc').value.trim();
+
+            if (!title) {
+                alert('Please enter a task title.');
+                return;
+            }
+
+            const phase = onboardingState.find(p => p.id === phaseId);
+            if (phase) {
+                const newTask = {
+                    id: `custom-${Date.now()}`,
+                    title: title,
+                    desc: desc || 'Custom requested task',
+                    completed: false,
+                    isCustom: true
+                };
+                phase.tasks.push(newTask);
+                saveToLocalStorage();
+                renderChecklist();
+                renderNavigation();
+                closeAddTaskModal();
+                showToast('Custom task added!');
+            }
+        }
+
+        function deleteCustomTask(phaseId, taskId) {
+            const phase = onboardingState.find(p => p.id === phaseId);
+            if (phase) {
+                phase.tasks = phase.tasks.filter(t => t.id !== taskId);
+                saveToLocalStorage();
+                renderChecklist();
+                renderNavigation();
+                showToast('Task removed');
+            }
+        }
+
+        // Export Modal & Text Summary Generator
+        function exportSummaryModal() {
+            let totalTasks = 0;
+            let completedTasks = 0;
+
+            onboardingState.forEach(phase => {
+                totalTasks += phase.tasks.length;
+                completedTasks += phase.tasks.filter(t => t.completed).length;
+            });
+
+            const overallPercent = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+            const storeName = document.getElementById('clientStoreName').value || 'E-Commerce Client';
+            const contact = document.getElementById('clientContact').value || 'N/A';
+            const targetDate = document.getElementById('targetLaunchDate').value || 'Not set';
+
+            let report = `====================================================\n`;
+            report += `  E-COMMERCE DIGITAL MARKETING ONBOARDING REPORT    \n`;
+            report += `====================================================\n\n`;
+            report += `Store Name:      ${storeName}\n`;
+            report += `Primary Contact: ${contact}\n`;
+            report += `Target Launch:   ${targetDate}\n`;
+            report += `Overall Status:  ${overallPercent}% Completed (${completedTasks}/${totalTasks} Tasks)\n`;
+            report += `Report Date:     ${new Date().toLocaleDateString()}\n\n`;
+            report += `----------------------------------------------------\n\n`;
+
+            onboardingState.forEach(phase => {
+                report += `[ ${phase.title.toUpperCase()} ]\n`;
+                phase.tasks.forEach(t => {
+                    const mark = t.completed ? '[X]' : '[ ]';
+                    report += ` ${mark} ${t.title}\n     Note: ${t.desc}\n`;
+                });
+                report += `\n`;
+            });
+
+            document.getElementById('exportTextContent').value = report;
+            document.getElementById('exportModal').classList.remove('hidden');
+        }
+
+        function closeExportModal() {
+            document.getElementById('exportModal').classList.add('hidden');
+        }
+
+        function copyExportText() {
+            const copyText = document.getElementById('exportTextContent');
+            copyText.select();
+            document.execCommand('copy');
+            showToast('Summary copied to clipboard!');
+        }
+
+        // Reset Checklist
+        function resetChecklist() {
+            if (confirm('Are you sure you want to reset all progress back to 0%? Custom tasks will be removed.')) {
+                onboardingState = JSON.parse(JSON.stringify(defaultOnboardingData));
+                saveToLocalStorage();
+                renderChecklist();
+                renderNavigation();
+                showToast('Checklist reset successfully');
+            }
+        }
+
+        // Toast Helper
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').innerText = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // Escape HTML Helper
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g, 
+                tag => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    "'": '&#39;',
+                    '"': '&quot;'
+                }[tag] || tag)
+            );
+        }
+    </script>
+</body>
+</html>
